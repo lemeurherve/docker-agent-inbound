@@ -3,11 +3,11 @@ function Test-CommandExists($command) {
     $ErrorActionPreference = 'stop'
     $res = $false
     try {
-        if(Get-Command $command) { 
-            $res = $true 
+        if(Get-Command $command) {
+            $res = $true
         }
     } catch {
-        $res = $false 
+        $res = $false
     } finally {
         $ErrorActionPreference=$oldPreference
     }
@@ -72,34 +72,33 @@ function Retry-Command {
 }
 
 function Cleanup($name='') {
-    if([System.String]::IsNullOrWhiteSpace($name)) {
-        $name = Get-EnvOrDefault 'AGENT_IMAGE' ''
-    }
-
-    if(![System.String]::IsNullOrWhiteSpace($name)) {
-        #Write-Host "Cleaning up $name"
+    try {
         docker kill "$name" 2>&1 | Out-Null
         docker rm -fv "$name" 2>&1 | Out-Null
+    } catch {
+        # do nothing....
     }
 }
 
-function Is-AgentContainerRunning($container='') {
-    if([System.String]::IsNullOrWhiteSpace($container)) {
-        $container = Get-EnvOrDefault 'AGENT_CONTAINER' ''
-    }
+function CleanupNetwork($name) {
+    docker network rm $name 2>&1 | Out-Null
+}
 
-    Start-Sleep -Seconds 5
-    Retry-Command -RetryCount 3 -Delay 1 -ScriptBlock { 
+function Is-ContainerRunning($container) {
+    Start-Sleep -Seconds 10
+    return Retry-Command -RetryCount 10 -Delay 3 -ScriptBlock {
         $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "inspect -f `"{{.State.Running}}`" $container"
         if(($exitCode -ne 0) -or (-not $stdout.Contains('true')) ) {
             throw('Exit code incorrect, or invalid value for running state')
         }
         return $true
-    } | Should -BeTrue
+    }
 }
 
-function Run-Program($cmd, $params) {
-    #Write-Host "cmd = $cmd, params = $params"
+function Run-Program($cmd, $params, $quiet=$false, $debug=$true) {
+    if($debug) {
+        Write-Host "cmd & params = $cmd $params"
+    }
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.CreateNoWindow = $true
     $psi.UseShellExecute = $false
@@ -114,12 +113,20 @@ function Run-Program($cmd, $params) {
     $stdout = $proc.StandardOutput.ReadToEnd()
     $stderr = $proc.StandardError.ReadToEnd()
     $proc.WaitForExit()
-    if($proc.ExitCode -ne 0) {
-        Write-Host "[err] stdout:`n$stdout"
-        Write-Host "[err] stderr:`n$stderr"
-        Write-Host "[err] cmd:`n$cmd"
-        Write-Host "[err] params:`n$param"
+    if(($proc.ExitCode -ne 0) -and (-not $quiet)) {
+        Write-Host "`n`nstdout:`n$stdout`n`nstderr:`n$stderr`n`n`cmd:`n$cmd`n`nparams:`n$params`n`n"
     }
 
     return $proc.ExitCode, $stdout, $stderr
+}
+
+function BuildNcatImage($windowsVersionTag) {
+    Write-Host "Building nmap image (Windows version '${windowsVersionTag}') for testing"
+    $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "inspect --type=image nmap" $true
+    if($exitCode -ne 0) {
+        Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
+        $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "build -t nmap --build-arg `"WINDOWS_VERSION_TAG=${windowsVersionTag}`" -f ./tests/netcat-helper/Dockerfile-windows ./tests/netcat-helper"
+        $exitCode | Should -Be 0
+        Pop-Location -StackName 'agent'
+    }
 }
