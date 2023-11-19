@@ -156,6 +156,9 @@ foreach($repository in $Repositories) {
 
     $builds = @{}
 
+    # TODO: set env:REPO here
+    $env:AGENT_TYPE = $repository
+
     Invoke-Expression "$baseDockerCmd config --services" 2>$null | ForEach-Object {
         $image = '{0}-{1}-{2}' -f $_, $env:WINDOWS_FLAVOR, $env:WINDOWS_VERSION_TAG # Ex: "jdk17-nanoserver-1809"
 
