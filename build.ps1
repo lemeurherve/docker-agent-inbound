@@ -139,7 +139,7 @@ function Publish-Image {
     }
 }
 
-$env:DOCKER_BUILDKIT = 1
+# $env:DOCKER_BUILDKIT = 1
 
 $originalDockerComposeFile = 'build-windows.yaml'
 $finalDockerComposeFile = 'build-windows-current.yaml'
