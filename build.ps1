@@ -15,11 +15,11 @@ $ErrorActionPreference = 'Stop'
 $Repository = 'agent'
 # TODO: rename to $AgentTypes
 $Repositories = @('agent', 'inbound-agent')
-if ($AgentType -ne '' -and $Repositories.ContainsKey($AgentType)) {
+if ($AgentType -ne '' -and $AgentType -in $Repositories) {
     $Repositories = @($AgentType)
 }
 $Organization = 'jenkins'
-$ImageType = 'windows-ltsc2019'
+$ImageType = 'windowsservercore-ltsc2019'
 
 if(!$DisableEnvProps) {
     Get-Content env.props | ForEach-Object {
@@ -139,16 +139,17 @@ function Publish-Image {
     }
 }
 
-$current = 'build-windows-current.yaml'
-$baseDockerCmd = 'docker-compose --file={0}.yaml' -f $current
+$originalDockerComposeFile = 'build-windows.yaml'
+$finalDockerComposeFile = 'build-windows-current.yaml'
+$baseDockerCmd = 'docker-compose --file={0}' -f $finalDockerComposeFile
 $baseDockerBuildCmd = '{0} build --parallel --pull' -f $baseDockerCmd
 
 foreach($repository in $Repositories) {
     # TODO: If agent, yq add target: agent (keep only one docker compose file)
-    Copy-Item -Path 'build-windows.yaml' -Destination 'build-windows-current.yaml'
+    Copy-Item -Path $originalDockerComposeFile -Destination $finalDockerComposeFile
     if($repository -eq 'agent') {
-        yq '.services.[].build.target = "agent"' file.yaml | Out-File -FilePath 'build-windows-current.yaml'
-        Get-Content -Path $filePath
+        yq '.services.[].build.target = \"agent\"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
+        Get-Content -Path $finalDockerComposeFile
     }
 
     $builds = @{}
@@ -185,9 +186,9 @@ foreach($repository in $Repositories) {
     }
     Write-Host "= BUILD: Building ${current}..."
     if ($DryRun) {
-        Write-Host "(dry-run) $dockerBuildCmd $repository"
+        Write-Host "(dry-run) $dockerBuildCmd"
     } else {
-        Invoke-Expression $dockerBuildCmd $repository
+        Invoke-Expression $dockerBuildCmd
     }
     Write-Host "= BUILD: Finished building ${current}"        
 
