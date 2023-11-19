@@ -149,10 +149,10 @@ $baseDockerBuildCmd = '{0} build --parallel --pull' -f $baseDockerCmd
 foreach($repository in $Repositories) {
     # TODO: If agent, yq add target: agent (keep only one docker compose file)
     Copy-Item -Path $originalDockerComposeFile -Destination $finalDockerComposeFile
-    if($repository -eq 'agent') {
-        yq '.services.[].build.target = \"agent\"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
-        Get-Content -Path $finalDockerComposeFile
-    }
+    # if($repository -eq 'agent') {
+    #     yq '.services.[].build.target = \"agent\"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
+    #     Get-Content -Path $finalDockerComposeFile
+    # }
 
     $builds = @{}
 

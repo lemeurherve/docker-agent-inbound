@@ -123,7 +123,8 @@ LABEL `
 
 ENTRYPOINT ["powershell.exe", "-f", "C:/ProgramData/Jenkins/jenkins-agent.ps1"]
 
-# https://github.com/docker/cli/issues/1134#issuecomment-406449342
-# ARG AGENT_TYPE
+# # https://github.com/docker/cli/issues/1134#issuecomment-406449342
+# ARG AGENT_TYPE=agent
+# ENV AGENT_TYPE=agent
 
 # FROM ${AGENT_TYPE} AS final
