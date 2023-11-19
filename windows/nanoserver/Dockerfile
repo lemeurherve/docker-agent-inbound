@@ -122,7 +122,7 @@ COPY jenkins-agent.ps1 C:/ProgramData/Jenkins
 LABEL `
     org.opencontainers.image.vendor="Jenkins project" `
     org.opencontainers.image.title="Official Jenkins Inbound Agent Base Docker image" `
-    org.opencontainers.image.description="This is an image for Jenkins agents using TCP or WebSockets to establish inbound connection to the Jenkins controller" \
+    org.opencontainers.image.description="This is an image for Jenkins agents using TCP or WebSockets to establish inbound connection to the Jenkins controller" `
     org.opencontainers.image.version="${VERSION}" `
     org.opencontainers.image.url="https://www.jenkins.io/" `
     org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent-inbound" `
