@@ -4,6 +4,7 @@ Param(
     [String] $Target = "build",
     [String] $Build = '',
     [String] $RemotingVersion = '3192.v713e3b_039fb_e',
+    [String] $AgentType = '',
     [String] $BuildNumber = '1',
     [switch] $PushVersions = $false,
     [switch] $DisableEnvProps = $false,
@@ -12,7 +13,11 @@ Param(
 
 $ErrorActionPreference = 'Stop'
 $Repository = 'agent'
+# TODO: rename to $AgentTypes
 $Repositories = @('agent', 'inbound-agent')
+if ($AgentType -ne '' -and $Repositories.ContainsKey($AgentType)) {
+    $Repositories = @($AgentType)
+}
 $Organization = 'jenkins'
 $ImageType = 'windows-ltsc2019'
 
@@ -67,7 +72,6 @@ Function Test-CommandExists {
 
 # this is the jdk version that will be used for the 'bare tag' images, e.g., jdk17-windowsservercore-1809 -> windowsserver-1809
 $defaultJdk = '17'
-$builds = @{}
 $env:REMOTING_VERSION = "$RemotingVersion"
 
 $items = $ImageType.Split("-")
@@ -135,9 +139,19 @@ function Publish-Image {
     }
 }
 
+$current = 'build-windows-current.yaml'
+$baseDockerCmd = 'docker-compose --file={0}.yaml' -f $current
+$baseDockerBuildCmd = '{0} build --parallel --pull' -f $baseDockerCmd
+
 foreach($repository in $Repositories) {
-    $baseDockerCmd = 'docker-compose --file=build-windows-{0}.yaml' -f $repository
-    $baseDockerBuildCmd = '{0} build --parallel --pull' -f $baseDockerCmd
+    # TODO: If agent, yq add target: agent (keep only one docker compose file)
+    Copy-Item -Path 'build-windows.yaml' -Destination 'build-windows-current.yaml'
+    if($repository -eq 'agent') {
+        yq '.services.[].build.target = "agent"' file.yaml | Out-File -FilePath 'build-windows-current.yaml'
+        Get-Content -Path $filePath
+    }
+
+    $builds = @{}
 
     Invoke-Expression "$baseDockerCmd config --services" 2>$null | ForEach-Object {
         $image = '{0}-{1}-{2}' -f $_, $env:WINDOWS_FLAVOR, $env:WINDOWS_VERSION_TAG # Ex: "jdk17-nanoserver-1809"
@@ -155,7 +169,7 @@ foreach($repository in $Repositories) {
             $tags += "${RemotingVersion}-${BuildNumber}-${baseImage}"
         }
 
-        $builds[$repository][$image] = @{
+        $builds[$image] = @{
             'Tags' = $tags;
         }
     }
@@ -213,11 +227,11 @@ foreach($repository in $Repositories) {
             $configuration.Output.Verbosity = 'Diagnostic'
             $configuration.CodeCoverage.Enabled = $false
     
-            if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds[$repository].ContainsKey($Build)) {
+            if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds.ContainsKey($Build)) {
                 Test-Image $Build
             } else {
                 Write-Host "= TEST: Testing all ${repository} images..."
-                foreach($image in $builds[$repository].Keys) {
+                foreach($image in $builds.Keys) {
                     Test-Image ('{0}|{1}' -f $repository, $image)
                 }
             }
@@ -235,8 +249,8 @@ foreach($repository in $Repositories) {
     if($target -eq "publish") {
         # Only fail the run afterwards in case of any issues when publishing the docker images
         $publishFailed = 0
-        if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds[$repository].ContainsKey($Build)) {
-            foreach($tag in $builds[$repository][$Build]['Tags']) {
+        if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds.ContainsKey($Build)) {
+            foreach($tag in $builds[$Build]['Tags']) {
                 Publish-Image  "$Build" "${Organization}/${repository}:${tag}"
                 if($lastExitCode -ne 0) {
                     $publishFailed = 1
@@ -254,8 +268,8 @@ foreach($repository in $Repositories) {
                 }
             }
         } else {
-            foreach($b in $builds[$repository].Keys) {
-                foreach($tag in $builds[$repository][$b]['Tags']) {
+            foreach($b in $builds.Keys) {
+                foreach($tag in $builds[$b]['Tags']) {
                     Publish-Image "$b" "${Organization}/${repository}:${tag}"
                     if($lastExitCode -ne 0) {
                         $publishFailed = 1
