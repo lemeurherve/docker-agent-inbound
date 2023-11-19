@@ -125,7 +125,7 @@ function BuildNcatImage($windowsVersionTag) {
     $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "inspect --type=image nmap" $true
     if($exitCode -ne 0) {
         Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
-        $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "build -t nmap --build-arg `"WINDOWS_VERSION_TAG=${windowsVersionTag}`" -f ./tests/netcat-helper/Dockerfile-windows ./tests/netcat-helper"
+        $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "build -t nmap --build-arg `"WINDOWS_VERSION_TAG=${windowsVersionTag}`" -f ./tests-inbound-agent/netcat-helper/Dockerfile-windows ./tests-inbound-agent/netcat-helper"
         $exitCode | Should -Be 0
         Pop-Location -StackName 'agent'
     }
