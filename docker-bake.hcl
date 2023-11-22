@@ -1,47 +1,47 @@
 group "linux" {
   targets = [
-    "alpine_jdk11",
+    // "alpine_jdk11",
     "alpine_jdk17",
     "alpine_jdk21",
-    "archlinux_jdk11",
-    "debian_jdk11",
-    "debian_jdk17",
-    "debian_jdk21",
-    "debian_jdk21_preview"
+    // "archlinux_jdk11",
+    // "debian_jdk11",
+    // "debian_jdk17",
+    // "debian_jdk21",
+    // "debian_jdk21_preview"
   ]
 }
 
-group "linux-arm64" {
-  targets = [
-    "debian_jdk11",
-    "debian_jdk17",
-    "debian_jdk21",
-    "alpine_jdk21",
-  ]
-}
+// group "linux-arm64" {
+//   targets = [
+//     "debian_jdk11",
+//     "debian_jdk17",
+//     "debian_jdk21",
+//     "alpine_jdk21",
+//   ]
+// }
 
-group "linux-arm32" {
-  targets = [
-    "debian_jdk11",
-    "debian_jdk17",
-    "debian_jdk21_preview"
-  ]
-}
+// group "linux-arm32" {
+//   targets = [
+//     "debian_jdk11",
+//     "debian_jdk17",
+//     "debian_jdk21_preview"
+//   ]
+// }
 
-group "linux-s390x" {
-  targets = [
-    "debian_jdk11",
-    "debian_jdk21_preview"
-  ]
-}
+// group "linux-s390x" {
+//   targets = [
+//     "debian_jdk11",
+//     "debian_jdk21_preview"
+//   ]
+// }
 
-group "linux-ppc64le" {
-  targets = [
-    "debian_jdk11",
-    "debian_jdk17",
-    "debian_jdk21_preview"
-  ]
-}
+// group "linux-ppc64le" {
+//   targets = [
+//     "debian_jdk11",
+//     "debian_jdk17",
+//     "debian_jdk21_preview"
+//   ]
+// }
 
 variable "REMOTING_VERSION" {
   default = "3192.v713e3b_039fb_e"
