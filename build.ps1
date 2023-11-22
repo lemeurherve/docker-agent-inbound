@@ -206,6 +206,8 @@ foreach($repository in $Repositories) {
             Write-Host "= TEST: (dry-run) test harness"
         } else {
             Write-Host "= TEST: Starting test harness"
+
+            # TODO: check here if there is a tests folder corresponding to the current agent type
     
             # Only fail the run afterwards in case of any test failures
             $testFailed = $false
