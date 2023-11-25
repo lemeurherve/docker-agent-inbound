@@ -1,50 +1,72 @@
 group "linux" {
   targets = [
-    // "alpine_jdk11",
-    // "alpine_jdk17",
-    // "alpine_jdk21",
-    // "archlinux_jdk11",
-    // "debian_jdk11",
-    // "debian_jdk17",
-    // "debian_jdk21_agent",
+    "alpine_jdk11",
+    "alpine_jdk17",
+    "alpine_jdk21",
+    "archlinux_jdk11",
+    "debian_jdk11",
+    "debian_jdk17",
     "debian_jdk21",
-    // "agent_debian_jdk21",
-    // "inbound_agent_debian_jdk21",
-    // "debian_jdk21_preview"
+    "debian_jdk21_preview"
   ]
 }
 
-// group "linux-arm64" {
-//   targets = [
-//     "debian_jdk11",
-//     "debian_jdk17",
-//     "debian_jdk21",
-//     "alpine_jdk21",
-//   ]
-// }
+group "linux-agent-only" {
+  targets = [
+    "agent_alpine_jdk11",
+    "agent_alpine_jdk17",
+    "agent_alpine_jdk21",
+    "archlinux_jdk11",
+    "agent_debian_jdk11",
+    "agent_debian_jdk17",
+    "agent_debian_jdk21",
+    "agent_debian_jdk21_preview"
+  ]
+}
 
-// group "linux-arm32" {
-//   targets = [
-//     "debian_jdk11",
-//     "debian_jdk17",
-//     "debian_jdk21_preview"
-//   ]
-// }
+group "linux-inbound-agent-only" {
+  targets = [
+    "inbound-agent_alpine_jdk11",
+    "inbound-agent_alpine_jdk17",
+    "inbound-agent_alpine_jdk21",
+    "inbound-agent_debian_jdk11",
+    "inbound-agent_debian_jdk17",
+    "inbound-agent_debian_jdk21",
+    "inbound-agent_debian_jdk21_preview"
+  ]
+}
 
-// group "linux-s390x" {
-//   targets = [
-//     "debian_jdk11",
-//     "debian_jdk21_preview"
-//   ]
-// }
+group "linux-arm64" {
+  targets = [
+    "debian_jdk11",
+    "debian_jdk17",
+    "debian_jdk21",
+    "alpine_jdk21",
+  ]
+}
 
-// group "linux-ppc64le" {
-//   targets = [
-//     "debian_jdk11",
-//     "debian_jdk17",
-//     "debian_jdk21_preview"
-//   ]
-// }
+group "linux-arm32" {
+  targets = [
+    "debian_jdk11",
+    "debian_jdk17",
+    "debian_jdk21_preview"
+  ]
+}
+
+group "linux-s390x" {
+  targets = [
+    "debian_jdk11",
+    "debian_jdk21_preview"
+  ]
+}
+
+group "linux-ppc64le" {
+  targets = [
+    "debian_jdk11",
+    "debian_jdk17",
+    "debian_jdk21_preview"
+  ]
+}
 
 variable "REMOTING_VERSION" {
   default = "3192.v713e3b_039fb_e"
@@ -58,8 +80,12 @@ variable "REGISTRY_ORG" {
   default = "jenkins"
 }
 
-variable "REGISTRY_REPO" {
+variable "REGISTRY_REPO_AGENT" {
   default = "agent"
+}
+
+variable "REGISTRY_REPO_INBOUND_AGENT" {
+  default = "inbound-agent"
 }
 
 variable "BUILD_NUMBER" {
@@ -98,152 +124,157 @@ variable "JAVA21_PREVIEW_VERSION" {
   default = "21.0.1+12"
 }
 
-// // target "archlinux_jdk11" {
-// //   dockerfile = "archlinux/Dockerfile"
-// //   context    = "."
-// //   args = {
-// //     JAVA_VERSION = JAVA11_VERSION
-// //     VERSION      = REMOTING_VERSION
-// //   }
-// //   tags = [
-// //     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-archlinux" : "",
-// //     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-archlinux-jdk11" : "",
-// //     "${REGISTRY}/${JENKINS_REPO}:archlinux",
-// //     "${REGISTRY}/${JENKINS_REPO}:latest-archlinux",
-// //     "${REGISTRY}/${JENKINS_REPO}:archlinux-jdk11",
-// //     "${REGISTRY}/${JENKINS_REPO}:latest-archlinux-jdk11",
-// //   ]
-// //   platforms = ["linux/amd64"]
-// // }
+target "archlinux_jdk11" {
+  dockerfile = "archlinux/Dockerfile"
+  context    = "."
+  args = {
+    JAVA_VERSION = JAVA11_VERSION
+    VERSION      = REMOTING_VERSION
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-archlinux" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-archlinux-jdk11" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:archlinux",
+    "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:latest-archlinux",
+    "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:archlinux-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${REGISTRY_REPO_AGENT}:latest-archlinux-jdk11",
+  ]
+  platforms = ["linux/amd64"]
+}
 
-// // target "alpine_jdk11" {
-// //   dockerfile = "alpine/Dockerfile"
-// //   context    = "."
-// //   args = {
-// //     ALPINE_TAG   = ALPINE_FULL_TAG
-// //     JAVA_VERSION = JAVA11_VERSION
-// //     VERSION      = REMOTING_VERSION
-// //   }
-// //   tags = [
-// //     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk11" : "",
-// //     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk11" : "",
-// //     "${REGISTRY}/${JENKINS_REPO}:alpine-jdk11",
-// //     "${REGISTRY}/${JENKINS_REPO}:alpine${ALPINE_SHORT_TAG}-jdk11",
-// //     "${REGISTRY}/${JENKINS_REPO}:latest-alpine-jdk11",
-// //     "${REGISTRY}/${JENKINS_REPO}:latest-alpine${ALPINE_SHORT_TAG}-jdk11",
-// //   ]
-// //   platforms = ["linux/amd64"]
-// // }
+target "alpine_jdk11" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_alpine_jdk11"
+  target = type
+  dockerfile = "alpine/Dockerfile"
+  context    = "."
+  args = {
+    ALPINE_TAG   = ALPINE_FULL_TAG
+    JAVA_VERSION = JAVA11_VERSION
+    VERSION      = REMOTING_VERSION
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk11" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk11" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk11",
+  ]
+  platforms = ["linux/amd64"]
+}
 
-// target "alpine_jdk17" {
-//   dockerfile = "alpine/Dockerfile"
-//   context    = "."
-//   args = {
-//     ALPINE_TAG   = ALPINE_FULL_TAG
-//     JAVA_VERSION = JAVA17_VERSION
-//     VERSION      = REMOTING_VERSION
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine" : "",
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}" : "",
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk17" : "",
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk17" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine${ALPINE_SHORT_TAG}",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine-jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine${ALPINE_SHORT_TAG}-jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine${ALPINE_SHORT_TAG}",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine-jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine${ALPINE_SHORT_TAG}-jdk17",
-//   ]
-//   platforms = ["linux/amd64"]
-// }
+target "alpine_jdk17" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_alpine_jdk17"
+  target = type
+  dockerfile = "alpine/Dockerfile"
+  context    = "."
+  args = {
+    ALPINE_TAG   = ALPINE_FULL_TAG
+    JAVA_VERSION = JAVA17_VERSION
+    VERSION      = REMOTING_VERSION
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk17" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk17" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk17",
+  ]
+  platforms = ["linux/amd64"]
+}
 
-// target "alpine_jdk21" {
-//   dockerfile = "alpine/Dockerfile"
-//   context    = "."
-//   args = {
-//     ALPINE_TAG   = ALPINE_FULL_TAG
-//     JAVA_VERSION = JAVA21_VERSION
-//     VERSION      = REMOTING_VERSION
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk21" : "",
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk21" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine-jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:alpine${ALPINE_SHORT_TAG}-jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine-jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-alpine${ALPINE_SHORT_TAG}-jdk21",
-//   ]
-//   platforms = ["linux/amd64", "linux/arm64"]
-// }
+target "alpine_jdk21" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_alpine_jdk21"
+  target = type
+  dockerfile = "alpine/Dockerfile"
+  context    = "."
+  args = {
+    ALPINE_TAG   = ALPINE_FULL_TAG
+    JAVA_VERSION = JAVA21_VERSION
+    VERSION      = REMOTING_VERSION
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk21" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk21" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk21",
+  ]
+  platforms = ["linux/amd64", "linux/arm64"]
+}
 
-// target "debian_jdk11" {
-//   dockerfile = "debian/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA11_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk11" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:bookworm-jdk11",
-//     "${REGISTRY}/${JENKINS_REPO}:jdk11",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-bookworm-jdk11",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-jdk11",
-//   ]
-//   platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/s390x", "linux/ppc64le"]
-// }
+target "debian_jdk11" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_debian_jdk11"
+  target = type
+  dockerfile = "debian/Dockerfile"
+  context    = "."
+  args = {
+    JAVA_VERSION   = JAVA11_VERSION
+    VERSION        = REMOTING_VERSION
+    DEBIAN_RELEASE = DEBIAN_RELEASE
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk11" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk11",
+  ]
+  platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/s390x", "linux/ppc64le"]
+}
 
-// target "debian_jdk17" {
-//   dockerfile = "debian/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA17_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}" : "",
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk17" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:bookworm-jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:latest",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-bookworm",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-bookworm-jdk17",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-jdk17",
-//   ]
-//   platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/ppc64le"]
-// }
-
-// target "debian_jdk21_agent" {
-//   dockerfile = "debian/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA21_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:bookworm-jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-bookworm-jdk21",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-jdk21",
-//   ]
-//   platforms = ["linux/amd64", "linux/arm64"]
-// }
+target "debian_jdk17" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_debian_jdk17"
+  target = type
+  dockerfile = "debian/Dockerfile"
+  context    = "."
+  args = {
+    JAVA_VERSION   = JAVA17_VERSION
+    VERSION        = REMOTING_VERSION
+    DEBIAN_RELEASE = DEBIAN_RELEASE
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk17" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk17",
+  ]
+  platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/ppc64le"]
+}
 
 target "debian_jdk21" {
-  name = "${tgt}_debian_jdk21"
   matrix = {
-    // tgt = ["agent"]
-    tgt = ["agent", "inbound-agent"]
-    // tgt = ["inbound-agent"]
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
   }
-  target = tgt
+  name = "${type}_debian_jdk21"
+  target = type
   dockerfile = "debian/Dockerfile"
   context    = "."
   args = {
@@ -252,89 +283,35 @@ target "debian_jdk21" {
     DEBIAN_RELEASE = DEBIAN_RELEASE
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${tgt}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${tgt}:bookworm-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${tgt}:jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${tgt}:latest-bookworm-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${tgt}:latest-jdk21",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk21",
   ]
-  // platforms = ["linux/amd64", "linux/arm64"]
-  platforms = ["linux/arm64"]
+  platforms = ["linux/amd64", "linux/arm64"]
 }
 
-// target "agent_debian_jdk21" {
-//   // name = "${tgt}_debian_jdk21"
-//   // matrix = {
-//   //   // tgt = ["agent"] #, "inbound-agent"]
-//   //   // tgt = ["agent" "inbound-agent"]
-//   //   tgt = ["inbound_agent"]
-//   // }
-//   // target = tgt
-//   target = "agent"
-//   dockerfile = "debian/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA21_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-//     "${REGISTRY}/${REGISTRY_ORG}/agent:bookworm-jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/agent:jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/agent:latest-bookworm-jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/agent:latest-jdk21",
-//   ]
-//   // platforms = ["linux/amd64", "linux/arm64"]
-//   platforms = ["linux/arm64"]
-// }
-
-// target "inbound_agent_debian_jdk21" {
-//   // name = "${tgt}_debian_jdk21"
-//   // matrix = {
-//   //   // tgt = ["agent"] #, "inbound-agent"]
-//   //   // tgt = ["agent" "inbound-agent"]
-//   //   tgt = ["inbound_agent"]
-//   // }
-//   // target = tgt
-//   target = "inbound_agent"
-//   dockerfile = "debian/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA21_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:bookworm-jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:latest-bookworm-jdk21",
-//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:latest-jdk21",
-//     // equal(ON_TAG, "true") ? "inbound-agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-//     // "inbound-agent:bookworm-jdk21",
-//     // "inbound-agent:jdk21",
-//     // "inbound-agent:latest-bookworm-jdk21",
-//     // "inbound-agent:latest-jdk21",
-//   ]
-//   // platforms = ["linux/amd64", "linux/arm64"]
-//   platforms = ["linux/arm64"]
-// }
-
-// target "debian_jdk21_preview" {
-//   dockerfile = "debian/preview/Dockerfile"
-//   context    = "."
-//   args = {
-//     JAVA_VERSION   = JAVA21_PREVIEW_VERSION
-//     VERSION        = REMOTING_VERSION
-//     DEBIAN_RELEASE = DEBIAN_RELEASE
-//   }
-//   tags = [
-//     equal(ON_TAG, "true") ? "${REGISTRY}/${JENKINS_REPO}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21-preview" : "",
-//     "${REGISTRY}/${JENKINS_REPO}:bookworm-jdk21-preview",
-//     "${REGISTRY}/${JENKINS_REPO}:jdk21-preview",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-bookworm-jdk21-preview",
-//     "${REGISTRY}/${JENKINS_REPO}:latest-jdk21-preview",
-//   ]
-//   platforms = ["linux/ppc64le", "linux/s390x", "linux/arm/v7"]
-// }
+target "debian_jdk21_preview" {
+  matrix = {
+    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+  }
+  name = "${type}_debian_jdk21_preview"
+  target = type
+  dockerfile = "debian/preview/Dockerfile"
+  context    = "."
+  args = {
+    JAVA_VERSION   = JAVA21_PREVIEW_VERSION
+    VERSION        = REMOTING_VERSION
+    DEBIAN_RELEASE = DEBIAN_RELEASE
+  }
+  tags = [
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21-preview" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk21-preview",
+  ]
+  // platforms = ["linux/ppc64le", "linux/s390x", "linux/arm/v7"]
+  platforms = ["linux/ppc64le", "linux/arm64", "linux/s390x", "linux/arm/v7"]
+}

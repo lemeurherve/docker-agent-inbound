@@ -50,7 +50,7 @@ RUN if test "${TARGETPLATFORM}" != 'linux/arm/v7'; then \
   else cp -r /opt/java/openjdk /javaruntime; \
   fi
 
-
+## Agent image target
 FROM debian:"${DEBIAN_RELEASE}"-slim AS agent
 
 ARG user=jenkins
@@ -109,6 +109,7 @@ LABEL \
   org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" \
   org.opencontainers.image.licenses="MIT"
 
+## Inbound Agent image target
 FROM agent AS inbound-agent
 
 ARG user=jenkins
