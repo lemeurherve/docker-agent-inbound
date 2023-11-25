@@ -241,7 +241,7 @@ target "debian_jdk21" {
   matrix = {
     // tgt = ["agent"] #, "inbound-agent"]
     // tgt = ["agent" "inbound-agent"]
-    tgt = ["inbound_agent"]
+    tgt = ["inbound-agent"]
   }
   target = tgt
   dockerfile = "debian/Dockerfile"

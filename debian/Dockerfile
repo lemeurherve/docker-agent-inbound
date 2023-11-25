@@ -109,7 +109,7 @@ LABEL \
   org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" \
   org.opencontainers.image.licenses="MIT"
 
-FROM agent AS inbound_agent
+FROM agent AS inbound-agent
 
 ARG user=jenkins
 
