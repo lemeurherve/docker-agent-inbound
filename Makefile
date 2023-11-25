@@ -11,10 +11,10 @@ current_arch := $(shell uname -m)
 export ARCH ?= $(shell case $(current_arch) in (x86_64) echo "amd64" ;; (i386) echo "386";; (aarch64|arm64) echo "arm64" ;; (armv6*) echo "arm/v6";; (armv7*) echo "arm/v7";; (s390*|riscv*|ppc64le) echo $(current_arch);; (*) echo "UNKNOWN-CPU";; esac)
 
 # Set to the path of a specific test suite to restrict execution only to this
-# Set to "skip" to skip
-# default is "all test suites in the "tests-agent/" & "test-inbound-agent" directories
-TEST_SUITES_AGENT ?= $(CURDIR)/tests-agent
-TEST_SUITES_INBOUND_AGENT ?= $(CURDIR)/tests-inbound-agent
+# Set their value to "skip" to skip corresponding tests
+# default is "all test suites in the "tests/" directories
+TEST_SUITES_AGENT ?= $(CURDIR)/tests/tests_agent.bats
+TEST_SUITES_INBOUND_AGENT ?= $(CURDIR)/tests/tests_inbound-agent.bats
 
 ##### Macros
 ## Check the presence of a CLI in the current PATH
@@ -82,7 +82,7 @@ test-%: prepare-test
 		IMAGE=$* bats/bin/bats $(TEST_SUITES_AGENT) $(bats_flags) | tee target/results-$*.tap; \
 	fi
 	if [[ $* == inbound-agent_* ]] && [[ $(TEST_SUITES_INBOUND_AGENT) != skip ]]; then \
-		IMAGE=$* bats/bin/bats $(TEST_SUITES_INBOUND_AGENT) | tee target/results-$*.tap; \
+		IMAGE=$* bats/bin/bats $(TEST_SUITES_INBOUND_AGENT) $(bats_flags) | tee target/results-$*.tap; \
 	fi
 # convert TAP to JUNIT
 	docker run --rm -v "$(CURDIR)":/usr/src/app -w /usr/src/app node:16-alpine \

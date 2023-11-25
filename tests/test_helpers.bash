@@ -79,3 +79,14 @@ function is_agent_container_running {
   sleep 1
   retry 3 1 assert "true" docker inspect -f '{{.State.Running}}' "${1}"
 }
+
+function buildNetcatImage() {
+    if ! docker inspect --type=image netcat-helper:latest &>/dev/null; then
+        docker build -t netcat-helper:latest tests/netcat-helper/ &>/dev/null
+    fi
+}
+
+function clean_test_container {
+	docker kill "${AGENT_CONTAINER}" "${NETCAT_HELPER_CONTAINER}" &>/dev/null || :
+	docker rm -fv "${AGENT_CONTAINER}" "${NETCAT_HELPER_CONTAINER}" &>/dev/null || :
+}
