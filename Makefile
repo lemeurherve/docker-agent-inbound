@@ -15,7 +15,7 @@ IMAGE_NAME_AGENT:=jenkins4eval/slave
 
 # Set to the path of a specific test suite to restrict execution only to this
 # default is "all test suites in the "tests/" directory
-TEST_SUITES ?= $(CURDIR)/tests-agent
+TEST_SUITES ?= $(CURDIR)/tests-inbound-agent
 
 ##### Macros
 ## Check the presence of a CLI in the current PATH
@@ -80,8 +80,8 @@ test-%: prepare-test
 	set -x
 	IMAGE=$* bats/bin/bats $(bats_flags) | tee target/results-$*.tap
 # convert TAP to JUNIT
-	docker run --rm -v "$(CURDIR)":/usr/src/app -w /usr/src/app node:16-alpine \
-		sh -c "npm install tap-xunit -g && cat target/results-$*.tap | tap-xunit --package='jenkinsci.docker.$*' > target/junit-results-$*.xml"
+	# docker run --rm -v "$(CURDIR)":/usr/src/app -w /usr/src/app node:16-alpine \
+	# 	sh -c "npm install tap-xunit -g && cat target/results-$*.tap | tap-xunit --package='jenkinsci.docker.$*' > target/junit-results-$*.xml"
 
 test: prepare-test
 	@make --silent list | while read image; do make --silent "test-$${image}"; done

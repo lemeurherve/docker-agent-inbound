@@ -53,7 +53,7 @@ function get_sut_image {
     # Option --print for 'docker buildx bake' prints the JSON configuration on the stdout
     # Option --silent for 'make' suppresses the echoing of command so the output is valid JSON
     # The image name is the 1st of the "tags" array, on the first "image" found
-    make --silent show | jq -r ".target.${IMAGE}.tags[0]"
+    make --silent show | jq -r ".target.\"${IMAGE}\".tags[0]"
 }
 
 function clean_test_container {
@@ -69,7 +69,7 @@ function is_agent_container_running {
 
 function buildNetcatImage() {
     if ! docker inspect --type=image netcat-helper:latest &>/dev/null; then
-        docker build -t netcat-helper:latest tests/netcat-helper/ &>/dev/null
+        docker build -t netcat-helper:latest tests-inbound-agent/netcat-helper/ &>/dev/null
     fi
 }
 

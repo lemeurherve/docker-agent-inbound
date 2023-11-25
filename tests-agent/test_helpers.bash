@@ -30,13 +30,14 @@ function get_sut_image {
     # Option --print for 'docker buildx bake' prints the JSON configuration on the stdout
     # Option --silent for 'make' suppresses the echoing of command so the output is valid JSON
     # The image name is the 1st of the "tags" array, on the first "image" found
-    make --silent show | jq -r ".target.${IMAGE}.tags[0]"
+    printMessage "== get_sut_image IMAGE: $IMAGE"
+    make --silent show | jq -r ".target.\"${IMAGE}\".tags[0]"
 }
 
 function get_remoting_version() {
   test -n "${IMAGE:?"[sut_image] Please set the variable 'IMAGE' to the name of the image to test in 'docker-bake.hcl'."}"
 
-  make --silent show | jq -r ".target.${IMAGE}.args.VERSION"
+  make --silent show | jq -r ".target.\"${IMAGE}\".args.VERSION"
 }
 
 function cleanup {
@@ -47,7 +48,7 @@ function cleanup {
 function get_dockerfile_directory() {
     test -n "${IMAGE:?"[sut_image] Please set the variable 'IMAGE' to the name of the image to test in 'docker-bake.hcl'."}"
 
-    DOCKERFILE=$(make --silent show | jq -r ".target.${IMAGE}.dockerfile")
+    DOCKERFILE=$(make --silent show | jq -r ".target.\"${IMAGE}\".dockerfile")
     echo "${DOCKERFILE%"/Dockerfile"}"
 }
 

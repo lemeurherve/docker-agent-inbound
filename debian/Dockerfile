@@ -59,7 +59,7 @@ ARG uid=1000
 ARG gid=1000
 
 RUN groupadd -g "${gid}" "${group}" \
-  && useradd -l -c "Jenkins user" -d /home/"${user}" -u "${uid}" -g "${gid}" -m "${user}"
+  && useradd -l -c "Jenkins user" -d /home/"${user}" -u "${uid}" -g "${gid}" -m "${user}" || echo "user ${user} already exists."
 
 ARG AGENT_WORKDIR=/home/"${user}"/agent
 ENV TZ=Etc/UTC
@@ -94,7 +94,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 USER "${user}"
 ENV AGENT_WORKDIR=${AGENT_WORKDIR}
-RUN mkdir /home/${user}/.jenkins && mkdir -p "${AGENT_WORKDIR}"
+RUN mkdir -p /home/"${user}"/.jenkins && mkdir -p "${AGENT_WORKDIR}"
 
 VOLUME /home/"${user}"/.jenkins
 VOLUME "${AGENT_WORKDIR}"
@@ -109,7 +109,7 @@ LABEL \
   org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" \
   org.opencontainers.image.licenses="MIT"
 
-FROM agent AS inbound-agent
+FROM agent AS inbound_agent
 
 ARG user=jenkins
 

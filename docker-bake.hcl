@@ -7,7 +7,8 @@ group "linux" {
     // "debian_jdk11",
     // "debian_jdk17",
     // "debian_jdk21_agent",
-    "debian_jdk21",
+    "agent_debian_jdk21",
+    "inbound_agent_debian_jdk21",
     // "debian_jdk21_preview"
   ]
 }
@@ -235,9 +236,11 @@ variable "JAVA21_PREVIEW_VERSION" {
 // }
 
 target "debian_jdk21" {
-  name = "debian_jdk21-${tgt}"
+  name = "${tgt}_debian_jdk21"
   matrix = {
-    tgt = ["agent", "inbound-agent"]
+    // tgt = ["agent"] #, "inbound-agent"]
+    // tgt = ["agent" "inbound-agent"]
+    tgt = ["inbound_agent"]
   }
   target = tgt
   dockerfile = "debian/Dockerfile"
@@ -257,6 +260,65 @@ target "debian_jdk21" {
   // platforms = ["linux/amd64", "linux/arm64"]
   platforms = ["linux/arm64"]
 }
+
+// target "agent_debian_jdk21" {
+//   // name = "${tgt}_debian_jdk21"
+//   // matrix = {
+//   //   // tgt = ["agent"] #, "inbound-agent"]
+//   //   // tgt = ["agent" "inbound-agent"]
+//   //   tgt = ["inbound_agent"]
+//   // }
+//   // target = tgt
+//   target = "agent"
+//   dockerfile = "debian/Dockerfile"
+//   context    = "."
+//   args = {
+//     JAVA_VERSION   = JAVA21_VERSION
+//     VERSION        = REMOTING_VERSION
+//     DEBIAN_RELEASE = DEBIAN_RELEASE
+//   }
+//   tags = [
+//     equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
+//     "${REGISTRY}/${REGISTRY_ORG}/agent:bookworm-jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/agent:jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/agent:latest-bookworm-jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/agent:latest-jdk21",
+//   ]
+//   // platforms = ["linux/amd64", "linux/arm64"]
+//   platforms = ["linux/arm64"]
+// }
+
+// target "inbound_agent_debian_jdk21" {
+//   // name = "${tgt}_debian_jdk21"
+//   // matrix = {
+//   //   // tgt = ["agent"] #, "inbound-agent"]
+//   //   // tgt = ["agent" "inbound-agent"]
+//   //   tgt = ["inbound_agent"]
+//   // }
+//   // target = tgt
+//   target = "inbound_agent"
+//   dockerfile = "debian/Dockerfile"
+//   context    = "."
+//   args = {
+//     JAVA_VERSION   = JAVA21_VERSION
+//     VERSION        = REMOTING_VERSION
+//     DEBIAN_RELEASE = DEBIAN_RELEASE
+//   }
+//   tags = [
+//     equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
+//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:bookworm-jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:latest-bookworm-jdk21",
+//     "${REGISTRY}/${REGISTRY_ORG}/inbound-agent:latest-jdk21",
+//     // equal(ON_TAG, "true") ? "inbound-agent:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
+//     // "inbound-agent:bookworm-jdk21",
+//     // "inbound-agent:jdk21",
+//     // "inbound-agent:latest-bookworm-jdk21",
+//     // "inbound-agent:latest-jdk21",
+//   ]
+//   // platforms = ["linux/amd64", "linux/arm64"]
+//   platforms = ["linux/arm64"]
+// }
 
 // target "debian_jdk21_preview" {
 //   dockerfile = "debian/preview/Dockerfile"
