@@ -239,7 +239,7 @@ variable "JAVA21_PREVIEW_VERSION" {
 target "debian_jdk21" {
   name = "${tgt}_debian_jdk21"
   matrix = {
-    // tgt = ["agent"] #, "inbound-agent"]
+    // tgt = ["agent"]
     tgt = ["agent", "inbound-agent"]
     // tgt = ["inbound-agent"]
   }

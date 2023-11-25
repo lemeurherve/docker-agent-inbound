@@ -30,7 +30,6 @@ function get_sut_image {
     # Option --print for 'docker buildx bake' prints the JSON configuration on the stdout
     # Option --silent for 'make' suppresses the echoing of command so the output is valid JSON
     # The image name is the 1st of the "tags" array, on the first "image" found
-    printMessage "== get_sut_image IMAGE: $IMAGE"
     make --silent show | jq -r ".target.\"${IMAGE}\".tags[0]"
 }
 

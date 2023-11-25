@@ -15,7 +15,7 @@ IMAGE_NAME:=jenkins4eval/agent
 # Set to the path of a specific test suite to restrict execution only to this
 # default is "all test suites in the "tests/" directory
 # TEST_SUITES ?= $(CURDIR)/tests-agent $(CURDIR)/tests-inbound-agent
-TEST_SUITES ?= $(CURDIR)/tests-inbound-agent
+TEST_SUITES ?= $(CURDIR)/tests-agent
 # TEST_SUITES ?= $(CURDIR)/tests-agent
 
 ##### Macros
@@ -44,6 +44,7 @@ build: check-reqs
 
 build-%:
 	@$(call check_image,$*)
+	echo "--- build $*..."
 	@set -x; $(bake_base_cli) --set '*.platform=linux/$(ARCH)' '$*'
 
 show:
@@ -77,9 +78,15 @@ test-%: prepare-test
 	@$(call check_image,$*)
 # Ensure that the image is built
 	@make --silent build-$*
-# Execute the test harness and write result to a TAP file
+	echo "---- test $* with ${bats_flags}..."
 	set -x
-	IMAGE=$* bats/bin/bats $(bats_flags) | tee target/results-$*.tap
+	if [[ $* == agent_* ]]; then \
+		echo "Image name starts with 'agent': $*"; \
+		IMAGE=$* bats/bin/bats $(bats_flags) | tee target/results-$*.tap; \
+	else \
+		echo "Image name starts with 'inbound-agent': $*"; \
+		IMAGE=$* bats/bin/bats /Users/veve/j-infra/docker-agent-inbound/tests-inbound-agent | tee target/results-$*.tap; \
+	fi
 # convert TAP to JUNIT
 	# docker run --rm -v "$(CURDIR)":/usr/src/app -w /usr/src/app node:16-alpine \
 	# 	sh -c "npm install tap-xunit -g && cat target/results-$*.tap | tap-xunit --package='jenkinsci.docker.$*' > target/junit-results-$*.xml"
