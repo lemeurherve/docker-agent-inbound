@@ -240,8 +240,8 @@ target "debian_jdk21" {
   name = "${tgt}_debian_jdk21"
   matrix = {
     // tgt = ["agent"] #, "inbound-agent"]
-    // tgt = ["agent" "inbound-agent"]
-    tgt = ["inbound-agent"]
+    tgt = ["agent", "inbound-agent"]
+    // tgt = ["inbound-agent"]
   }
   target = tgt
   dockerfile = "debian/Dockerfile"
