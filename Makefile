@@ -15,7 +15,7 @@ IMAGE_NAME_AGENT:=jenkins4eval/slave
 
 # Set to the path of a specific test suite to restrict execution only to this
 # default is "all test suites in the "tests/" directory
-TEST_SUITES ?= $(CURDIR)/tests
+TEST_SUITES ?= $(CURDIR)/tests-agent
 
 ##### Macros
 ## Check the presence of a CLI in the current PATH
