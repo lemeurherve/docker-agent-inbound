@@ -55,6 +55,11 @@ REPOSITORY=${DOCKERHUB_REPO:-agent}
 ORGANIZATION=${DOCKERHUB_ORGANISATION:-jenkins}
 remoting_version=${REMOTING_VERSION:-${remoting_version}}
 
+echo "== DOCKERHUB_ORGANISATION: $DOCKERHUB_ORGANISATION"
+echo "== ORGANIZATION: $ORGANIZATION"
+
+export REGISTRY_ORG="${ORGANIZATION}" #/${REPOSITORY}"
+
 if [[ "${target}" = "build" ]] ; then
   make show
   make build
@@ -72,7 +77,6 @@ fi
 
 if [[ "${target}" = "publish" ]] ; then
   set -x
-  export JENKINS_REPO="${ORGANIZATION}/${REPOSITORY}"
   export REMOTING_VERSION="${remoting_version}"
   if [[ -n "${build_number}" ]] ; then
     export ON_TAG=true
