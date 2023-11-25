@@ -51,7 +51,7 @@ RUN if test "${TARGETPLATFORM}" != 'linux/arm/v7'; then \
   fi
 
 
-FROM debian:"${DEBIAN_RELEASE}"-slim AS build
+FROM debian:"${DEBIAN_RELEASE}"-slim AS agent
 
 ARG user=jenkins
 ARG group=jenkins
@@ -108,3 +108,24 @@ LABEL \
   org.opencontainers.image.url="https://www.jenkins.io/" \
   org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" \
   org.opencontainers.image.licenses="MIT"
+
+FROM agent AS inbound-agent
+
+ARG user=jenkins
+
+USER root
+COPY ../../jenkins-agent /usr/local/bin/jenkins-agent
+RUN chmod +x /usr/local/bin/jenkins-agent &&\
+    ln -s /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-slave
+USER ${user}
+
+LABEL \
+  org.opencontainers.image.vendor="Jenkins project" \
+  org.opencontainers.image.title="Official Jenkins Inbound Agent Base Docker image" \
+  org.opencontainers.image.description="This is an image for Jenkins agents using TCP or WebSockets to establish inbound connection to the Jenkins controller" \
+  org.opencontainers.image.version="${VERSION}" \
+  org.opencontainers.image.url="https://www.jenkins.io/" \
+  org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent-inbound" \
+  org.opencontainers.image.licenses="MIT"
+
+ENTRYPOINT ["/usr/local/bin/jenkins-agent"]
