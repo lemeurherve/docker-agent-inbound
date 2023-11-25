@@ -48,28 +48,24 @@ SUT_IMAGE="$(get_sut_image)"
   local TEST_VERSION PARENT_IMAGE_VERSION_SUFFIX ARG_TEST_VERSION TEST_USER sut_image sut_cid
 
   # Old version used to test overriding the build arguments.
-  # This old version must have the same tag suffixes as the ones defined in the docker-bake file (`-jdk17`, `jdk11`, etc.)
   TEST_VERSION="3180.v3dd999d24861"
-  PARENT_IMAGE_VERSION_SUFFIX="2"
-
-  ARG_TEST_VERSION="${TEST_VERSION}-${PARENT_IMAGE_VERSION_SUFFIX}"
   TEST_USER="root"
 
   sut_image="${SUT_IMAGE}-tests-${BATS_TEST_NUMBER}"
-  target="inbound_agent_debian_jdk21"
-  command="--load inbound_agent_debian_jdk21"
-  # command="--set \"${target}.args.version=${ARG_TEST_VERSION}\" --set \"${target}.args.user=${TEST_USER}\" --set \"${target}.platform=linux/${ARCH}\" --set \"${target}.tags=${sut_image}\" --load inbound_agent_debian_jdk21"
-  # command="--set \"${IMAGE}.args.version=${ARG_TEST_VERSION}\" --set \"${IMAGE}.args.user=${TEST_USER}\" --set \"${IMAGE}.platform=linux/${ARCH}\" --set \"${IMAGE}.tags=${sut_image}\" --load debian_jdk21"
-  # command="--set debian_jdk21.args.version=\"${ARG_TEST_VERSION}\" --set debian_jdk21.args.user=\"${TEST_USER}\" --set debian_jdk21.platform=linux/\"${ARCH}\" --set debian_jdk21.tags=\"${sut_image}\" --load \"debian_jdk21\""
-  
-  printMessage "command: ${command}"
-  docker buildx bake ${command}
+
+  docker buildx bake \
+    --set "${IMAGE}.args.VERSION=${TEST_VERSION}" \
+    --set "${IMAGE}.args.user=${TEST_USER}" \
+    --set "${IMAGE}.platform=linux/${ARCH}" \
+    --set "${IMAGE}.tags=${sut_image}" \
+    --load \
+      "${IMAGE}"
 
   sut_cid="$(docker run -d -it --name "${AGENT_CONTAINER}" -P "${sut_image}" /bin/sh)"
 
   is_agent_container_running "${sut_cid}"
 
-  run docker exec "${sut_cid}" sh -c "java -cp /usr/share/jenkins/agent.jar hudson.remoting.jnlp.Main -version"
+  run docker exec "${sut_cid}" sh -c "java -jar /usr/share/jenkins/agent.jar -version"
   [ "${TEST_VERSION}" = "${lines[0]}" ]
 
   run docker exec "${AGENT_CONTAINER}" sh -c "id -u -n ${TEST_USER}"
