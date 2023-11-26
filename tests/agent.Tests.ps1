@@ -80,7 +80,7 @@ Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] image has correct applicati
     # }
 
     It 'does not include jenkins-agent.ps1 (inbound-agent)' {
-        $exitCode, $stdout, $stderr = Run-Program 'docker' "exec $global:CONTAINERNAME $global:CONTAINERSHELL -C `"if(-not Test-Path C:/ProgramData/Jenkins/jenkins-agent.ps1) { exit 0 } else { exit -1 }`""
+        $exitCode, $stdout, $stderr = Run-Program 'docker' "exec $global:CONTAINERNAME $global:CONTAINERSHELL -C `"if(Test-Path C:/ProgramData/Jenkins/jenkins-agent.ps1) { exit -1 } else { exit 0 }`""
         $exitCode | Should -Be 0
     }
 
