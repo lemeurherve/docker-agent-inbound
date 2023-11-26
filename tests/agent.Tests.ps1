@@ -1,5 +1,6 @@
 Import-Module -DisableNameChecking -Force $PSScriptRoot/test_helpers.psm1
 
+$global:AGENT_TYPE = Get-EnvOrDefault 'AGENT_TYPE' ''
 $global:AGENT_IMAGE = Get-EnvOrDefault 'AGENT_IMAGE' ''
 $global:BUILD_CONTEXT = Get-EnvOrDefault 'BUILD_CONTEXT' ''
 $global:VERSION = Get-EnvOrDefault 'VERSION' ''
@@ -27,14 +28,14 @@ $global:GITLFSVERSION = '3.4.0'
 
 Cleanup($global:CONTAINERNAME)
 
-Describe "[$global:AGENT_IMAGE] image is present" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] image is present" {
     It 'builds image' {
         $exitCode, $stdout, $stderr = Run-Program 'docker' "inspect $global:AGENT_IMAGE"
         $exitCode | Should -Be 0
     }
 }
 
-Describe "[$global:AGENT_IMAGE] correct image metadata" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] correct image metadata" {
     It 'has correct volumes' {
         $exitCode, $stdout, $stderr = Run-Program 'docker' "inspect --format='{{.Config.Volumes}}' $global:AGENT_IMAGE"
         $stdout = $stdout.Trim()
@@ -43,7 +44,7 @@ Describe "[$global:AGENT_IMAGE] correct image metadata" {
     }
 }
 
-Describe "[$global:AGENT_IMAGE] image has correct applications in the PATH" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] image has correct applications in the PATH" {
     BeforeAll {
         docker run --detach --interactive --tty --name "$global:CONTAINERNAME" "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
@@ -88,7 +89,7 @@ Describe "[$global:AGENT_IMAGE] image has correct applications in the PATH" {
     }
 }
 
-# Describe "[$global:AGENT_IMAGE] check user account" {
+# Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] check user account" {
 #     BeforeAll {
 #         docker run -d -it --name "$global:CONTAINERNAME" -P "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
 #         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
@@ -109,7 +110,7 @@ Describe "[$global:AGENT_IMAGE] image has correct applications in the PATH" {
 #     }
 # }
 
-# Describe "[$global:AGENT_IMAGE] check user access to directories" {
+# Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] check user access to directories" {
 #     BeforeAll {
 #         docker run -d -it --name "$global:CONTAINERNAME" -P "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
 #         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
@@ -139,7 +140,7 @@ $global:TEST_VERSION="4.0"
 $global:TEST_USER="test-user"
 $global:TEST_AGENT_WORKDIR="C:/test-user/something"
 
-# Describe "[$global:AGENT_IMAGE] can be built with custom build arguments" {
+# Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] can be built with custom build arguments" {
 #     BeforeAll {
 #         Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
 

@@ -104,6 +104,7 @@ function Test-Image {
 
     Write-Host "= TEST: Testing ${agentType} image ${imageName}:"
 
+    $env:AGENT_TYPE = $agentType
     $env:AGENT_IMAGE = $imageName
     $env:BUILD_CONTEXT = '.'
     $env:VERSION = "$RemotingVersion-$BuildNumber"
@@ -122,6 +123,7 @@ function Test-Image {
     } else {
         Write-Host "There were $($TestResults.PassedCount) passed tests out of $($TestResults.TotalCount) in ${agentType} $imageName"
     }
+    Remove-Item env:\AGENT_TYPE
     Remove-Item env:\AGENT_IMAGE
     Remove-Item env:\BUILD_CONTEXT
     Remove-Item env:\VERSION

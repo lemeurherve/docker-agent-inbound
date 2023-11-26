@@ -1,5 +1,6 @@
 Import-Module -DisableNameChecking -Force $PSScriptRoot/test_helpers.psm1
 
+$global:AGENT_TYPE = Get-EnvOrDefault 'AGENT_TYPE' ''
 $global:AGENT_IMAGE = Get-EnvOrDefault 'AGENT_IMAGE' ''
 $global:BUILD_CONTEXT = Get-EnvOrDefault 'BUILD_CONTEXT' ''
 $global:version = Get-EnvOrDefault 'VERSION' ''
@@ -31,14 +32,14 @@ CleanupNetwork("jnlp-network")
 
 BuildNcatImage($global:WINDOWSVERSIONTAG)
 
-Describe "[$global:AGENT_IMAGE] build image" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] build image" {
     It 'builds image' {
         $exitCode, $stdout, $stderr = Run-Program 'docker' "build --build-arg version=${global:version} --build-arg `"WINDOWS_VERSION_TAG=${global:WINDOWSVERSIONTAG}`" --build-arg JAVA_MAJOR_VERSION=${global:JAVAMAJORVERSION} --tag=${global:AGENT_IMAGE} --file ./windows/${global:WINDOWSFLAVOR}/Dockerfile ${global:BUILD_CONTEXT}"
         $exitCode | Should -Be 0
     }
 }
 
-Describe "[$global:AGENT_IMAGE] check default user account" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] check default user account" {
     BeforeAll {
         docker run --detach --tty --name "$global:CONTAINERNAME" "$global:AGENT_IMAGE" -Cmd "$global:CONTAINERSHELL"
         $LASTEXITCODE | Should -Be 0
@@ -60,7 +61,7 @@ Describe "[$global:AGENT_IMAGE] check default user account" {
     }
 }
 
-Describe "[$global:AGENT_IMAGE] image has jenkins-agent.ps1 in the correct location" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] image has jenkins-agent.ps1 in the correct location" {
     BeforeAll {
         docker run --detach --tty --name "$global:CONTAINERNAME" "$global:AGENT_IMAGE" -Cmd "$global:CONTAINERSHELL"
         $LASTEXITCODE | Should -Be 0
@@ -77,7 +78,7 @@ Describe "[$global:AGENT_IMAGE] image has jenkins-agent.ps1 in the correct locat
     }
 }
 
-Describe "[$global:AGENT_IMAGE] image starts jenkins-agent.ps1 correctly (slow test)" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] image starts jenkins-agent.ps1 correctly (slow test)" {
     It 'connects to the nmap container' {
         $exitCode, $stdout, $stderr = Run-Program 'docker' "network create --driver nat jnlp-network"
         # Launch the netcat utility, listening at port 5000 for 30 sec
@@ -112,7 +113,7 @@ Describe "[$global:AGENT_IMAGE] image starts jenkins-agent.ps1 correctly (slow t
     }
 }
 
-Describe "[$global:AGENT_IMAGE] custom build args" {
+Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] custom build args" {
     BeforeAll {
         Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
         # Old version used to test overriding the build arguments.
@@ -145,7 +146,7 @@ Describe "[$global:AGENT_IMAGE] custom build args" {
 # === TODO: uncomment test later, see error log below
 # === this test passes on a Windows machine
 
-# Describe "[$global:AGENT_IMAGE] passing JVM options (slow test)" {
+# Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] passing JVM options (slow test)" {
 #     It "shows the java version ${global:JAVAMAJORVERSION} with --show-version" {
 #         $exitCode, $stdout, $stderr = Run-Program 'docker' "network create --driver nat jnlp-network"
 #         # Launch the netcat utility, listening at port 5000 for 30 sec
