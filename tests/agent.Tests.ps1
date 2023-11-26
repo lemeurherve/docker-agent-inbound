@@ -134,8 +134,6 @@ $global:TEST_VERSION="4.0"
 $global:TEST_USER="test-user"
 $global:TEST_AGENT_WORKDIR="C:/test-user/something"
 
-# $env:DOCKER_BUILDKIT = 1
-
 Describe "[$global:AGENT_IMAGE] can be built with custom build arguments" {
     BeforeAll {
         Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
