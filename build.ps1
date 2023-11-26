@@ -12,13 +12,14 @@ Param(
 )
 
 $ErrorActionPreference = 'Stop'
-$Repository = 'agent'
-$Repositories = @('agent', 'inbound-agent')
-if ($AgentType -ne '' -and $AgentType -in $Repositories) {
-    $Repositories = @($AgentType)
+$AgentTypes = @('agent', 'inbound-agent')
+if ($AgentType -ne '' -and $AgentType -in $AgentTypes) {
+    $AgentTypes = @($AgentType)
 }
-$Organisation = 'jenkins4eval'
 $ImageType = 'windowsservercore-ltsc2019'
+$Organisation = 'jenkins4eval'
+$AgentRepository = 'agent'
+$InboundAgentRepository = 'inbound-agent'
 
 if(!$DisableEnvProps) {
     Get-Content env.props | ForEach-Object {
@@ -35,8 +36,12 @@ if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_ORGANISATION)) {
     $Organisation = $env:DOCKERHUB_ORGANISATION
 }
 
-if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_REPO)) {
-    $Repository = $env:DOCKERHUB_REPO
+if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_REPO_AGENT)) {
+    $AgentRepository = $env:DOCKERHUB_REPO_AGENT
+}
+
+if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_REPO_INBOUND_AGENT)) {
+    $InboundAgentRepository = $env:DOCKERHUB_REPO_INBOUND_AGENT
 }
 
 if(![String]::IsNullOrWhiteSpace($env:REMOTING_VERSION)) {
@@ -90,32 +95,32 @@ Test-CommandExists "yq"
 
 function Test-Image {
     param (
-        $RepositoryAndImageName
+        $AgentTypeAndImageName
     )
 
-    $items = $RepositoryAndImageName.Split("|")
-    $repository = $items[0]
+    $items = $AgentTypeAndImageName.Split("|")
+    $agentType = $items[0]
     $imageName = $items[1]
 
-    Write-Host "= TEST: Testing ${repository} image ${imageName}:"
+    Write-Host "= TEST: Testing ${agentType} image ${imageName}:"
 
     $env:AGENT_IMAGE = $imageName
     $env:BUILD_CONTEXT = '.'
     $env:VERSION = "$RemotingVersion-$BuildNumber"
 
-    $targetPath = '.\target\{0}\{1}' -f $repository, $imageName
+    $targetPath = '.\target\{0}\{1}' -f $agentType, $imageName
     if(Test-Path $targetPath) {
         Remove-Item -Recurse -Force $targetPath
     }
     New-Item -Path $targetPath -Type Directory | Out-Null
-    $configuration.Run.Path = 'tests\{0}.Tests.ps1' -f $repository
+    $configuration.Run.Path = 'tests\{0}.Tests.ps1' -f $agentType
     $configuration.TestResult.OutputPath = '{0}\junit-results.xml' -f $targetPath
     $TestResults = Invoke-Pester -Configuration $configuration
     if ($TestResults.FailedCount -gt 0) {
-        Write-Host "There were $($TestResults.FailedCount) failed tests in ${repository} $imageName"
+        Write-Host "There were $($TestResults.FailedCount) failed tests in ${agentType} $imageName"
         $testFailed = $true
     } else {
-        Write-Host "There were $($TestResults.PassedCount) passed tests out of $($TestResults.TotalCount) in ${repository} $imageName"
+        Write-Host "There were $($TestResults.PassedCount) passed tests out of $($TestResults.TotalCount) in ${agentType} $imageName"
     }
     Remove-Item env:\AGENT_IMAGE
     Remove-Item env:\BUILD_CONTEXT
@@ -145,18 +150,19 @@ $finalDockerComposeFile = 'build-windows-current.yaml'
 $baseDockerCmd = 'docker-compose --file={0}' -f $finalDockerComposeFile
 $baseDockerBuildCmd = '{0} build --parallel --pull' -f $baseDockerCmd
 
-foreach($repository in $Repositories) {
-    # TODO: If agent, yq add target: agent (keep only one docker compose file)
+foreach($agentType in $AgentTypes) {
+    $env:AGENT_TYPE = $agentType
+
+    # Temporary docker compose file (git ignored)
     Copy-Item -Path $originalDockerComposeFile -Destination $finalDockerComposeFile
-    # if($repository -eq 'agent') {
-    #     yq '.services.[].build.target = \"agent\"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
-    #     Get-Content -Path $finalDockerComposeFile
-    # }
+    $repository = $InboundAgentRepository
+    # If it's a type "agent", set corresponding target and repository
+    if($agentType -eq 'agent') {
+        yq '.services.[].build.target = "agent"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
+        $repository = $AgentRepository
+    }
 
     $builds = @{}
-
-    # TODO: set env:REPO here
-    $env:AGENT_TYPE = $repository
 
     Invoke-Expression "$baseDockerCmd config --services" 2>$null | ForEach-Object {
         $image = '{0}-{1}-{2}' -f $_, $env:WINDOWS_FLAVOR, $env:WINDOWS_VERSION_TAG # Ex: "jdk17-nanoserver-1809"
@@ -206,8 +212,6 @@ foreach($repository in $Repositories) {
         } else {
             Write-Host "= TEST: Starting test harness"
 
-            # TODO: check here if there is a tests folder corresponding to the current agent type
-    
             # Only fail the run afterwards in case of any test failures
             $testFailed = $false
             $mod = Get-InstalledModule -Name Pester -MinimumVersion 5.3.0 -MaximumVersion 5.3.3 -ErrorAction SilentlyContinue
@@ -237,18 +241,18 @@ foreach($repository in $Repositories) {
             if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds.ContainsKey($Build)) {
                 Test-Image $Build
             } else {
-                Write-Host "= TEST: Testing all ${repository} images..."
+                Write-Host "= TEST: Testing all ${agentType} images..."
                 foreach($image in $builds.Keys) {
-                    Test-Image ('{0}|{1}' -f $repository, $image)
+                    Test-Image ('{0}|{1}' -f $agentType, $image)
                 }
             }
     
             # Fail if any test failures
             if($testFailed -ne $false) {
-                Write-Error "Test stage failed for ${repository}!"
+                Write-Error "Test stage failed for ${agentType}!"
                 exit 1
             } else {
-                Write-Host "= TEST: stage passed for ${repository}!"
+                Write-Host "= TEST: stage passed for ${agentType}!"
             }
         }
     }    
