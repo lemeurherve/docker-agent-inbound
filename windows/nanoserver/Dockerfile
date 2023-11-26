@@ -29,6 +29,7 @@ FROM eclipse-temurin:"${JAVA_VERSION}"-jdk-windowsservercore-"${TOOLS_WINDOWS_VE
 
 FROM mcr.microsoft.com/powershell:nanoserver-"${TOOLS_WINDOWS_VERSION}" AS pwsh-source
 
+## Agent image target
 FROM mcr.microsoft.com/windows/nanoserver:"${WINDOWS_VERSION_TAG}" AS agent
 
 ARG JAVA_HOME="C:\openjdk-17"
@@ -115,6 +116,7 @@ LABEL `
     org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" `
     org.opencontainers.image.licenses="MIT"
 
+## Inbound Agent image target
 FROM agent AS inbound-agent
 
 COPY jenkins-agent.ps1 C:/ProgramData/Jenkins

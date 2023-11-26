@@ -27,6 +27,7 @@ ARG WINDOWS_VERSION_TAG=ltsc2019
 ARG TOOLS_WINDOWS_VERSION=1809
 FROM eclipse-temurin:"${JAVA_VERSION}"-jdk-windowsservercore-"${TOOLS_WINDOWS_VERSION}" AS jdk-core
 
+## Agent image target
 FROM mcr.microsoft.com/windows/servercore:"${WINDOWS_VERSION_TAG}" AS agent
 
 ARG JAVA_HOME="C:\openjdk-17"
@@ -108,6 +109,7 @@ LABEL `
     org.opencontainers.image.source="https://github.com/jenkinsci/docker-agent" `
     org.opencontainers.image.licenses="MIT"
 
+## Inbound Agent image target
 FROM agent AS inbound-agent
 
 COPY jenkins-agent.ps1 C:/ProgramData/Jenkins
