@@ -1,13 +1,13 @@
 group "linux" {
   targets = [
-    "alpine_jdk11",
-    "alpine_jdk17",
-    "alpine_jdk21",
-    "archlinux_jdk11",
-    "debian_jdk11",
-    "debian_jdk17",
+    // "alpine_jdk11",
+    // "alpine_jdk17",
+    // "alpine_jdk21",
+    // "archlinux_jdk11",
+    // "debian_jdk11",
+    // "debian_jdk17",
     "debian_jdk21",
-    "debian_jdk21_preview"
+    // "debian_jdk21_preview"
   ]
 }
 
@@ -144,7 +144,7 @@ target "archlinux_jdk11" {
 
 target "alpine_jdk11" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_alpine_jdk11"
   target = type
@@ -156,19 +156,19 @@ target "alpine_jdk11" {
     VERSION      = REMOTING_VERSION
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk11" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk11" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk11",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk11" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk11" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine${ALPINE_SHORT_TAG}-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine${ALPINE_SHORT_TAG}-jdk11",
   ]
   platforms = ["linux/amd64"]
 }
 
 target "alpine_jdk17" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_alpine_jdk17"
   target = type
@@ -180,25 +180,25 @@ target "alpine_jdk17" {
     VERSION      = REMOTING_VERSION
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk17" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk17" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk17",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk17" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk17" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine${ALPINE_SHORT_TAG}",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine${ALPINE_SHORT_TAG}-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine${ALPINE_SHORT_TAG}",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine${ALPINE_SHORT_TAG}-jdk17",
   ]
   platforms = ["linux/amd64"]
 }
 
 target "alpine_jdk21" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_alpine_jdk21"
   target = type
@@ -210,19 +210,19 @@ target "alpine_jdk21" {
     VERSION      = REMOTING_VERSION
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk21" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk21" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:alpine${ALPINE_SHORT_TAG}-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-alpine${ALPINE_SHORT_TAG}-jdk21",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine-jdk21" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-alpine${ALPINE_SHORT_TAG}-jdk21" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:alpine${ALPINE_SHORT_TAG}-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-alpine${ALPINE_SHORT_TAG}-jdk21",
   ]
   platforms = ["linux/amd64", "linux/arm64"]
 }
 
 target "debian_jdk11" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_debian_jdk11"
   target = type
@@ -234,18 +234,18 @@ target "debian_jdk11" {
     DEBIAN_RELEASE = DEBIAN_RELEASE
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk11" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk11",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk11",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk11" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:bookworm-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-bookworm-jdk11",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-jdk11",
   ]
   platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/s390x", "linux/ppc64le"]
 }
 
 target "debian_jdk17" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_debian_jdk17"
   target = type
@@ -257,21 +257,21 @@ target "debian_jdk17" {
     DEBIAN_RELEASE = DEBIAN_RELEASE
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}" : "",
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk17" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk17",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk17",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}" : "",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk17" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:bookworm-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-bookworm",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-bookworm-jdk17",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-jdk17",
   ]
   platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7", "linux/ppc64le"]
 }
 
 target "debian_jdk21" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_debian_jdk21"
   target = type
@@ -283,18 +283,18 @@ target "debian_jdk21" {
     DEBIAN_RELEASE = DEBIAN_RELEASE
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk21",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk21",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent"}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:bookworm-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-bookworm-jdk21",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-jdk21",
   ]
   platforms = ["linux/amd64", "linux/arm64"]
 }
 
 target "debian_jdk21_preview" {
   matrix = {
-    type = ["${REGISTRY_REPO_AGENT}", "${REGISTRY_REPO_INBOUND_AGENT}"]
+    type = ["agent", "inbound-agent"]
   }
   name = "${type}_debian_jdk21_preview"
   target = type
@@ -306,11 +306,11 @@ target "debian_jdk21_preview" {
     DEBIAN_RELEASE = DEBIAN_RELEASE
   }
   tags = [
-    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21-preview" : "",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:bookworm-jdk21-preview",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:jdk21-preview",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-bookworm-jdk21-preview",
-    "${REGISTRY}/${REGISTRY_ORG}/${type}:latest-jdk21-preview",
+    equal(ON_TAG, "true") ? "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:${REMOTING_VERSION}-${BUILD_NUMBER}-jdk21-preview" : "",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:bookworm-jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-bookworm-jdk21-preview",
+    "${REGISTRY}/${REGISTRY_ORG}/${type == "agent" ? REGISTRY_REPO_AGENT : REGISTRY_REPO_INBOUND_AGENT}:latest-jdk21-preview",
   ]
   // platforms = ["linux/ppc64le", "linux/s390x", "linux/arm/v7"]
   platforms = ["linux/ppc64le", "linux/arm64", "linux/s390x", "linux/arm/v7"]

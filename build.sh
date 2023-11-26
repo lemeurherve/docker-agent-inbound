@@ -51,14 +51,10 @@ if [[ "${disable_env_props}" = "0" ]] ; then
   export "$(cut -d= -f1 env.props)"
 fi
 
-REPOSITORY=${DOCKERHUB_REPO:-agent}
-ORGANIZATION=${DOCKERHUB_ORGANISATION:-jenkins}
+export REGISTRY_ORG=${DOCKERHUB_ORGANISATION:-jenkins4eval}
+export REGISTRY_REPO_AGENT=${DOCKERHUB_REPO_AGENT:-agent}
+export REGISTRY_REPO_INBOUND_AGENT=${DOCKERHUB_REPO_INBOUND_AGENT:-inbound-agent}
 remoting_version=${REMOTING_VERSION:-${remoting_version}}
-
-echo "== DOCKERHUB_ORGANISATION: $DOCKERHUB_ORGANISATION"
-echo "== ORGANIZATION: $ORGANIZATION"
-
-export REGISTRY_ORG="${ORGANIZATION}" #/${REPOSITORY}"
 
 if [[ "${target}" = "build" ]] ; then
   make show

@@ -13,12 +13,11 @@ Param(
 
 $ErrorActionPreference = 'Stop'
 $Repository = 'agent'
-# TODO: rename to $AgentTypes
 $Repositories = @('agent', 'inbound-agent')
 if ($AgentType -ne '' -and $AgentType -in $Repositories) {
     $Repositories = @($AgentType)
 }
-$Organization = 'jenkins'
+$Organisation = 'jenkins4eval'
 $ImageType = 'windowsservercore-ltsc2019'
 
 if(!$DisableEnvProps) {
@@ -32,12 +31,12 @@ if(!$DisableEnvProps) {
     }
 }
 
-if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_REPO)) {
-    $Repository = $env:DOCKERHUB_REPO
+if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_ORGANISATION)) {
+    $Organisation = $env:DOCKERHUB_ORGANISATION
 }
 
-if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_ORGANISATION)) {
-    $Organization = $env:DOCKERHUB_ORGANISATION
+if(![String]::IsNullOrWhiteSpace($env:DOCKERHUB_REPO)) {
+    $Repository = $env:DOCKERHUB_REPO
 }
 
 if(![String]::IsNullOrWhiteSpace($env:REMOTING_VERSION)) {
@@ -180,7 +179,7 @@ foreach($repository in $Repositories) {
         }
     }
 
-    Write-Host "= PREPARE: List of $Organization/$repository images and tags to be processed:"
+    Write-Host "= PREPARE: List of $Organisation/$repository images and tags to be processed:"
     ConvertTo-Json $builds
     
     $dockerBuildCmd = $baseDockerBuildCmd
@@ -259,7 +258,7 @@ foreach($repository in $Repositories) {
         $publishFailed = 0
         if(![System.String]::IsNullOrWhiteSpace($Build) -and $builds.ContainsKey($Build)) {
             foreach($tag in $builds[$Build]['Tags']) {
-                Publish-Image  "$Build" "${Organization}/${repository}:${tag}"
+                Publish-Image  "$Build" "${Organisation}/${repository}:${tag}"
                 if($lastExitCode -ne 0) {
                     $publishFailed = 1
                 }
@@ -268,7 +267,7 @@ foreach($repository in $Repositories) {
                     if($tag -eq 'latest') {
                         # TODO: review for inbound-agent or remove as never 'latest'
                         $buildTag = "$RemotingVersion-$BuildNumber"
-                        Publish-Image "$Build" "${Organization}/${repository}:${buildTag}"
+                        Publish-Image "$Build" "${Organisation}/${repository}:${buildTag}"
                         if($lastExitCode -ne 0) {
                             $publishFailed = 1
                         }
@@ -278,7 +277,7 @@ foreach($repository in $Repositories) {
         } else {
             foreach($b in $builds.Keys) {
                 foreach($tag in $builds[$b]['Tags']) {
-                    Publish-Image "$b" "${Organization}/${repository}:${tag}"
+                    Publish-Image "$b" "${Organisation}/${repository}:${tag}"
                     if($lastExitCode -ne 0) {
                         $publishFailed = 1
                     }
@@ -287,7 +286,7 @@ foreach($repository in $Repositories) {
                         if($tag -eq 'latest') {
                             # TODO: review for inbound-agent or remove as never 'latest'
                             $buildTag = "$RemotingVersion-$BuildNumber"
-                            Publish-Image "$b" "${Organization}/${repository}:${buildTag}"
+                            Publish-Image "$b" "${Organisation}/${repository}:${buildTag}"
                             if($lastExitCode -ne 0) {
                                 $publishFailed = 1
                             }

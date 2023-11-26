@@ -78,10 +78,10 @@ test-%: prepare-test
 	@make --silent build-$*
 	@echo "== testing $*"
 	set -x
-	if [[ $* == agent_* ]] && [[ $(TEST_SUITES_AGENT) != skip ]]; then \
+	@if [[ $* == agent_* ]] && [[ $(TEST_SUITES_AGENT) != skip ]]; then \
 		IMAGE=$* bats/bin/bats $(TEST_SUITES_AGENT) $(bats_flags) | tee target/results-$*.tap; \
 	fi
-	if [[ $* == inbound-agent_* ]] && [[ $(TEST_SUITES_INBOUND_AGENT) != skip ]]; then \
+	@if [[ $* == inbound-agent_* ]] && [[ $(TEST_SUITES_INBOUND_AGENT) != skip ]]; then \
 		IMAGE=$* bats/bin/bats $(TEST_SUITES_INBOUND_AGENT) $(bats_flags) | tee target/results-$*.tap; \
 	fi
 # convert TAP to JUNIT
