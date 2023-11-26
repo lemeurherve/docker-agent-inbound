@@ -77,32 +77,30 @@ function Cleanup($name='') {
     }
 
     if(![System.String]::IsNullOrWhiteSpace($name)) {
-        #Write-Host "Cleaning up $name"
         docker kill "$name" 2>&1 | Out-Null
         docker rm -fv "$name" 2>&1 | Out-Null
     }
 }
 
-function Is-AgentContainerRunning($container='') {
+function Is-ContainerRunning($container='') {
     if([System.String]::IsNullOrWhiteSpace($container)) {
         $container = Get-EnvOrDefault 'AGENT_CONTAINER' ''
     }
 
     Start-Sleep -Seconds 5
-    Retry-Command -RetryCount 3 -Delay 1 -ScriptBlock { 
+    Retry-Command -RetryCount 10 -Delay 3 -ScriptBlock { 
         $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "inspect -f `"{{.State.Running}}`" $container"
         if(($exitCode -ne 0) -or (-not $stdout.Contains('true')) ) {
             throw('Exit code incorrect, or invalid value for running state')
         }
         return $true
-    } | Should -BeTrue
+    }
 }
 
-function Run-Program($cmd, $params, $quiet=$false, $debug=$true) {
-    if($debug) {
+function Run-Program($cmd, $params, $quiet=$false) {
+    if(-not $quiet) {
         Write-Host "cmd & params = $cmd $params"
     }
-    #Write-Host "cmd = $cmd, params = $params"
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.CreateNoWindow = $true
     $psi.UseShellExecute = $false
@@ -125,4 +123,19 @@ function Run-Program($cmd, $params, $quiet=$false, $debug=$true) {
     }
 
     return $proc.ExitCode, $stdout, $stderr
+}
+
+function BuildNcatImage($windowsVersionTag) {
+    Write-Host "Building nmap image (Windows version '${windowsVersionTag}') for testing"
+    $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "inspect --type=image nmap" $true
+    if($exitCode -ne 0) {
+        Push-Location -StackName 'agent' -Path "$PSScriptRoot/.."
+        $exitCode, $stdout, $stderr = Run-Program 'docker.exe' "build -t nmap --build-arg `"WINDOWS_VERSION_TAG=${windowsVersionTag}`" -f ./tests-inbound-agent/netcat-helper/Dockerfile-windows ./tests-inbound-agent/netcat-helper"
+        $exitCode | Should -Be 0
+        Pop-Location -StackName 'agent'
+    }
+}
+
+function CleanupNetwork($name) {
+    docker network rm $name 2>&1 | Out-Null
 }

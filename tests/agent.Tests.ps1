@@ -46,7 +46,7 @@ Describe "[$global:AGENT_IMAGE] image is present" {
 # Describe "[$global:AGENT_IMAGE] image has correct applications in the PATH" {
 #     BeforeAll {
 #         docker run --detach --interactive --tty --name "$global:CONTAINERNAME" "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
-#         Is-AgentContainerRunning $global:CONTAINERNAME
+#         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
 #     }
 
 #     It 'has java installed and in the path' {
@@ -86,7 +86,7 @@ Describe "[$global:AGENT_IMAGE] image is present" {
 # Describe "[$global:AGENT_IMAGE] check user account" {
 #     BeforeAll {
 #         docker run -d -it --name "$global:CONTAINERNAME" -P "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
-#         Is-AgentContainerRunning $global:CONTAINERNAME
+#         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
 #     }
 
 #     It 'Password never expires' {
@@ -107,7 +107,7 @@ Describe "[$global:AGENT_IMAGE] image is present" {
 # Describe "[$global:AGENT_IMAGE] check user access to directories" {
 #     BeforeAll {
 #         docker run -d -it --name "$global:CONTAINERNAME" -P "$global:AGENT_IMAGE" "$global:CONTAINERSHELL"
-#         Is-AgentContainerRunning $global:CONTAINERNAME
+#         Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
 #     }
 
 #     It 'can write to HOME' {
@@ -144,7 +144,7 @@ Describe "[$global:AGENT_IMAGE] can be built with custom build arguments" {
         $exitCode | Should -Be 0
 
         $exitCode, $stdout, $stderr = Run-Program 'docker' "run -d -it --name $global:CONTAINERNAME -P $global:AGENT_IMAGE $global:CONTAINERSHELL"
-        Is-AgentContainerRunning $global:CONTAINERNAME
+        Is-ContainerRunning $global:CONTAINERNAME | Should -BeTrue
     }
 
     It 'has the correct version of remoting' {

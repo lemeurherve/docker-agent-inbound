@@ -80,10 +80,6 @@ function Cleanup($name='') {
     }
 }
 
-function CleanupNetwork($name) {
-    docker network rm $name 2>&1 | Out-Null
-}
-
 function Is-ContainerRunning($container) {
     Start-Sleep -Seconds 10
     return Retry-Command -RetryCount 10 -Delay 3 -ScriptBlock {
@@ -129,4 +125,8 @@ function BuildNcatImage($windowsVersionTag) {
         $exitCode | Should -Be 0
         Pop-Location -StackName 'agent'
     }
+}
+
+function CleanupNetwork($name) {
+    docker network rm $name 2>&1 | Out-Null
 }

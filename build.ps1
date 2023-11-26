@@ -109,7 +109,7 @@ function Test-Image {
         Remove-Item -Recurse -Force $targetPath
     }
     New-Item -Path $targetPath -Type Directory | Out-Null
-    $configuration.Run.Path = 'tests-{0}' -f $repository
+    $configuration.Run.Path = 'tests\{0}.Tests.ps1' -f $repository
     $configuration.TestResult.OutputPath = '{0}\junit-results.xml' -f $targetPath
     $TestResults = Invoke-Pester -Configuration $configuration
     if ($TestResults.FailedCount -gt 0) {
