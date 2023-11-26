@@ -158,7 +158,7 @@ foreach($agentType in $AgentTypes) {
     $repository = $InboundAgentRepository
     # If it's a type "agent", set corresponding target and repository
     if($agentType -eq 'agent') {
-        yq '.services.[].build.target = "agent"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
+        yq '.services.[].build.target = \"agent\"' $originalDockerComposeFile | Out-File -FilePath $finalDockerComposeFile
         $repository = $AgentRepository
     }
 
