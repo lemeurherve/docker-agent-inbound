@@ -132,7 +132,7 @@ Describe "[$global:AGENT_TYPE > $global:AGENT_IMAGE] custom build args" {
     }
 
     It "has the correct agent.jar version" {
-        $exitCode, $stdout, $stderr = Run-Program 'docker' "exec $global:CONTAINERNAME $global:CONTAINERSHELL -c `"java -cp C:/ProgramData/Jenkins/agent.jar hudson.remoting.jnlp.Main -version`""
+        $exitCode, $stdout, $stderr = Run-Program 'docker' "exec $global:CONTAINERNAME $global:CONTAINERSHELL -c `"java -jar C:/ProgramData/Jenkins/agent.jar -version`""
         $exitCode | Should -Be 0
         $stdout | Should -Match $TEST_VERSION
     }
