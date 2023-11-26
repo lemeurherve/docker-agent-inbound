@@ -27,4 +27,3 @@ jobs:
           short-description: This is an image for Jenkins agents using TCP or WebSockets to establish inbound connection to the Jenkins controller
           repository: jenkins/inbound-agent
           readme-filepath: ./README_inbound-agent.md
-  
