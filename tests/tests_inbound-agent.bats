@@ -45,7 +45,7 @@ SUT_IMAGE="$(get_sut_image)"
 @test "[${SUT_IMAGE}] use build args correctly" {
   cd "${BATS_TEST_DIRNAME}"/.. || false
 
-  local TEST_VERSION PARENT_IMAGE_VERSION_SUFFIX ARG_TEST_VERSION TEST_USER sut_image sut_cid
+  local TEST_VERSION TEST_USER sut_image sut_cid
 
   # Old version used to test overriding the build arguments.
   TEST_VERSION="3180.v3dd999d24861"
