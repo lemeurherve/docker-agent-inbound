@@ -5,7 +5,6 @@ services:
       context: ./
       dockerfile: ./windows/${WINDOWS_FLAVOR}/Dockerfile
       args:
-        AGENT_TYPE: ${AGENT_TYPE}
         JAVA_HOME: "C:/openjdk-11"
         JAVA_VERSION: "11.0.20.1_1"
         VERSION: ${REMOTING_VERSION}
@@ -17,7 +16,6 @@ services:
       context: ./
       dockerfile: ./windows/${WINDOWS_FLAVOR}/Dockerfile
       args:
-        AGENT_TYPE: ${AGENT_TYPE}
         JAVA_HOME: "C:/openjdk-17"
         JAVA_VERSION: "17.0.8.1_1"
         VERSION: ${REMOTING_VERSION}
@@ -29,7 +27,6 @@ services:
       context: ./
       dockerfile: ./windows/${WINDOWS_FLAVOR}/Dockerfile
       args:
-        AGENT_TYPE: ${AGENT_TYPE}
         JAVA_HOME: "C:/openjdk-21"
         JAVA_VERSION: "21_35"
         VERSION: ${REMOTING_VERSION}
